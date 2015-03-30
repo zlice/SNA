@@ -1,0 +1,29 @@
+Proof of Concept DNA storage
+
+
+Uses base4 system (number of bases in nucleic acid)
+
+4ROLL method is for encoding Digital information in Biological format
+
+4ROLL.c uses a hardcode file /tmp/test to encode data
+data is printed to stdout with printf (ya i know)
+
+4ROLLdec.c uses a hardcoded file /tmp/test.dec to decode data
+data is automatically written to /tmp/output
+/tmp/output will be overwritten 
+
+
+there's a method i have for storing Biological data in Digital format
+but it is messy and needs cleaning, thus is not on here
+basically you use 2bit to encode a base (xNA)
+00 = A
+01 = C
+10 = G
+11 = T
+1byte = 4bases
+
+hope the code is endian neutral but i can not test it
+
+see comments in code for more info
+
+
