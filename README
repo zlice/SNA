@@ -104,7 +104,7 @@ CONS
 ===========
 
 -not fully tested
--uses 'garbage' value to compensate for homopolymer repeats
+-uses 'garbage' value to compensate for homopolymer repeats (possible to use these for parity bit for data integrity?)
 -single nucleotide error means data could not be reliable (possibly 'statically roll' table instead of 'rolling' based on nucleotides? using a data value outside the DNA could also allow for multi-threading)
 -proof of concept quality (e.g. code has little error checking, will crash if you don't have enough memory to encode the file you're using)
 -may have a size error in decoding (see code. bs_offset not checked for size properly)
