@@ -1,32 +1,113 @@
+
 Proof of Concept DNA storage
+======================
 
-
-Uses base4 system (number of bases in nucleic acid)
+SNA is a DNA digital storage encoder/decoder for base2 (binary) to base4 (DNA)
 
 4ROLL method is for encoding Digital information in Biological format
 
+Use this format for encoding, and 'roll' through a table to change the binary to DNA order
+00 = A   ->   00 = C ...
+01 = C   ->   01 = G ...
+10 = G   ->   10 = T ...
+11 = T   ->   11 = A ...
+1byte = 4bases
+
+Uses hardcoded values. Focus of code is a PoC, not usability or arguments.
+(Willing to increase functionality if proven useful)
+
 4ROLL.c uses a hardcode file /tmp/test to encode data
-data is printed to stdout with printf (ya i know)
+data is printed to stdout
 
 4ROLLdec.c uses a hardcoded file /tmp/test.dec to decode data
 data is automatically written to /tmp/output
-/tmp/output will be overwritten 
+/tmp/output will be overwritten
 
-
-there's a method i have for storing Biological data in Digital format
-but it is messy and needs cleaning, thus is not on here
-basically you use 2bit to encode a base (xNA)
-00 = A
-01 = C
-10 = G
-11 = T
-1byte = 4bases
-
-hope the code is endian neutral but i can not test it
-
-see comments in code for more info
-
+gentoo live iso pulled from https://gentoo.org/downloads
 MLK mp3 pulled from EBI https://www.ebi.ac.uk/
 https://www.ebi.ac.uk/goldman-srv/DNA-storage/orig_files/
+
+===========
+COMPILE
+===========
+
+gcc -o 4ROLL 4ROLL.c
+gcc -o 4ROLLdec 4ROLLdec.c
+
+===========
+RUNNING
+===========
+
+./4ROLL > /path/to/output.extension
+./4ROLLdec (automatically outputs to /tmp/output, can change in code for windows or symlink for *nix based systems)
+
+======================
+GENTOO ISO RUN & STATS
+======================
+
+Gentoo live iso is about 1.4GB
+Encoded into DNA is about 5.9GB
+
+$ date; ./4ROLL > gentoo.dna;date
+Sat Mar 17 09:00:45 MST 2018
+Sat Mar 17 09:02:15 MST 2018
+
+$ date; ./4ROLLdec ; date
+Sat Mar 17 09:03:12 MST 2018
+outputting file to /tmp/output with size 1490615928
+had 270563811 junk nucleotides
+Sat Mar 17 09:04:40 MST 2018
+
+bytes
+1422974976   - gen2.new (gentoo_live.iso decoded)
+5962463715   - gentoo.dna
+1422974976   - gentoo_live.iso
+
+    encoded   /   decoded
+5962463715 / 1422974976
+4.190139542552293 x original size
+
+junk           /  total size
+270563811 / 5962463715
+0.04537785451328319  (4.5% junk)
+
+===========
+MLK STATS
+===========
+
+bytes
+168539   -  MLK_excerpt_VBR_45-85.mp3
+705890   -  new (MLK mp3 encoded)
+
+outputting file to /tmp/output with size 176472
+had 31734 junk nucleotides
+
+encoded / decoded
+705890 / 168539
+4.188288764024944 x original size
+70589
+
+junk    / total size
+31734 / 705890.
+0.044956012976526086 (4.5% junk)
+
+===========
+PROS
+===========
+
+-fast
+-no libraries or fancy gadgets
+-can avoid defined length of repeating homopolymer nucleotides
+
+===========
+CONS
+===========
+
+-not fully tested
+-uses 'garbage' value to compensate for homopolymer repeats
+-single nucleotide error means data could not be reliable (possibly 'statically roll' table instead of 'rolling' based on nucleotides? using a data value outside the DNA could also allow for multi-threading)
+-proof of concept quality (e.g. code has little error checking, will crash if you don't have enough memory to encode the file you're using)
+-may have a size error in decoding (see code. bs_offset not checked for size properly)
+
 
 
