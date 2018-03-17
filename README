@@ -63,11 +63,11 @@ bytes
 5962463715   - gentoo.dna
 1422974976   - gentoo_live.iso
 
-    encoded   /   decoded
+ encoded   /   decoded
 5962463715 / 1422974976
 4.190139542552293 x original size
 
-junk           /  total size
+junk      /  total size
 270563811 / 5962463715
 0.04537785451328319  (4.5% junk)
 
@@ -83,11 +83,11 @@ outputting file to /tmp/output with size 176472
 had 31734 junk nucleotides
 
 encoded / decoded
-705890 / 168539
+705890  / 168539
 4.188288764024944 x original size
 70589
 
-junk    / total size
+junk  / total size
 31734 / 705890.
 0.044956012976526086 (4.5% junk)
 
