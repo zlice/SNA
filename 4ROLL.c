@@ -68,32 +68,32 @@ const u_int G4ROLL [24] = {
 };
 const u_char HOMO_REPEAT = 3;
 
-int g_tbl_pos=0, g_tbl_add = 0;//gTblPos should be 0-23
+int g_tbl_pos=0, g_tbl_add = 0;//g_tbl_pos should be 0-23
 
-void tblSet(u_char p_last) { //time for dinner!
+void tbl_set(u_char p_last) { //time for dinner!
      g_tbl_pos += 6;
-     if(g_tbl_pos > 23)
+     if (g_tbl_pos > 23)
        g_tbl_pos -= 24;
 
      if      (p_last == (u_char) (G4ROLL[g_tbl_pos]) )
        g_tbl_add=3;
-     else if(p_last == (u_char) (G4ROLL[g_tbl_pos])>>8)
+     else if (p_last == (u_char) (G4ROLL[g_tbl_pos])>>8)
        g_tbl_add=1;
-     else if(p_last == (u_char) (G4ROLL[g_tbl_pos])>>16)
+     else if (p_last == (u_char) (G4ROLL[g_tbl_pos])>>16)
        g_tbl_add=2;
-     else if(p_last == (u_char) (G4ROLL[g_tbl_pos])>>24)
+     else if (p_last == (u_char) (G4ROLL[g_tbl_pos])>>24)
        g_tbl_add=6;
 
      g_tbl_pos += g_tbl_add;
-     if(g_tbl_pos > 23)
+     if (g_tbl_pos > 23)
        g_tbl_pos -= 24;
-     if(g_tbl_pos > 23) {
+     if (g_tbl_pos > 23) {
        printf("ERROR! table pos outside bounds!\nEXITING!\n");
        return;
-     }//if
+     } // if
 
-     //printf("new g_tbl_pos is %d - output was %c\n", gTblPos, p_last);
-}//tblSet
+     //printf("new g_tbl_pos is %d - output was %c\n", g_tbl_pos, p_last);
+} // tbl_set
 
 
 int main() {
@@ -101,14 +101,14 @@ int main() {
   char * file_buf;
   u_char * out_buf, lst_nuc=0, b1=0, b2=0, b3=0;//b4=0;
   long long file_sz=0, i=0, k=0, n_cnt=1, bs_offset=0, shift=0;
-  u_char dt_enc = 0;//read byte by byte
+  u_char dt_enc=0;//read byte by byte
   FILE *read_file;
 
 /*
   printf("using table\n");
-  for(i=0;i<24;i++) {
+  for (i=0;i<24;i++) {
    printf("%d = %c%c%c%c\n", i, G4ROLL[i]>>24, G4ROLL[i]>>16, G4ROLL[i]>>8, G4ROLL[i]);
-  }//for 24 (i)
+  } // for 24 (i)
 */
 
   read_file = fopen("/tmp/test", "r");
@@ -127,11 +127,11 @@ int main() {
   memset(out_buf, 0x0, file_sz*5+1);
   fread(file_buf, file_sz, 1, read_file);
 
-  for(i=0; i<file_sz; i++) {
+  for (i=0; i<file_sz; i++) {
      //printf("filePos is %d\n", i);
      dt_enc = file_buf[i];
 
-     for(k=0; k<4; k++) {
+     for (k=0; k<4; k++) {
           //00-00-00-00 byte encoded
           b1 = (3<<(2*(3-k)));// 11
           b2 = (2<<(2*(3-k)));// 10
@@ -141,30 +141,30 @@ int main() {
           //take  00 - 10 - 11 - 11
           //check 00, add nucleotide
           //check 10, add nuc...
-          if(dt_enc >= b1 ) {      //>= 192,48,12,3
+          if (dt_enc >= b1 ) {      //>= 192,48,12,3
             dt_enc -= b1;
             //shift = 0;
           }
-          else if(dt_enc >= b2 ) { //>=  128,32,8,2
+          else if (dt_enc >= b2 ) { //>=  128,32,8,2
             dt_enc -= b2;
             shift = 8;
           }
-          else if(dt_enc >= b3 ) { //>=  64,16,4,1
+          else if (dt_enc >= b3 ) { //>=  64,16,4,1
             dt_enc -= b3;
             shift = 16;
           }
           else { //00b
             shift = 24;
-          }//else
+          } // else
           out_buf[i*4+k+bs_offset] = (u_char)((G4ROLL[g_tbl_pos])>>shift);
           //printf("coded %c from TBLSET = %d\n", out_buf[i*4+k+bs_offset], g_tbl_pos);
-          if(lst_nuc == out_buf[i*4+k+bs_offset])
+          if (lst_nuc == out_buf[i*4+k+bs_offset])
             n_cnt++;
           else
             n_cnt = 1;
-          if(n_cnt >= HOMO_REPEAT) {
-            if(shift>7) shift -= 8;
-            else        shift += 8;
+          if (n_cnt >= HOMO_REPEAT) {
+            if (shift>7) shift -= 8;
+            else         shift += 8;
             bs_offset++;
             out_buf[i*4+k+bs_offset] = (u_char)((G4ROLL[g_tbl_pos])>>shift);
             //^add bs value, problem is this rolls the table next
@@ -173,14 +173,14 @@ int main() {
             n_cnt = 1;
           }
           lst_nuc = out_buf[i*4+k+bs_offset];
-          tblSet(lst_nuc);
+          tbl_set(lst_nuc);
           shift = 0;
-     }//k
+     } // k
 
      //just some more rolling 'randomness'
-     if(i % 24)
+     if (i % 24)
        g_tbl_pos += 7;
-     if(g_tbl_pos>23)
+     if (g_tbl_pos>23)
        g_tbl_pos -= 24;
 
   };//i, file
@@ -193,5 +193,5 @@ int main() {
   fclose(read_file);
   return 0;
 
-}//main
+} // main
 

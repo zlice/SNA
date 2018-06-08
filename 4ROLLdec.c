@@ -68,30 +68,30 @@ const u_char HOMO_REPEAT = 3;
 
 int g_tbl_pos=0, g_tbl_add = 0;//g_tbl_pos should be 0-23
 
-void tblSet(u_char p_last) { //time for dinner!
+void tbl_set(u_char p_last) { //time for dinner!
      g_tbl_pos += 6;
-     if(g_tbl_pos > 23)
+     if (g_tbl_pos > 23)
        g_tbl_pos -= 24;
 
      if      (p_last == (u_char) (G4ROLL[g_tbl_pos]) )
        g_tbl_add=3;
-     else if(p_last == (u_char) (G4ROLL[g_tbl_pos])>>8)
+     else if (p_last == (u_char) (G4ROLL[g_tbl_pos])>>8)
        g_tbl_add=1;
-     else if(p_last == (u_char) (G4ROLL[g_tbl_pos])>>16)
+     else if (p_last == (u_char) (G4ROLL[g_tbl_pos])>>16)
        g_tbl_add=2;
-     else if(p_last == (u_char) (G4ROLL[g_tbl_pos])>>24)
+     else if (p_last == (u_char) (G4ROLL[g_tbl_pos])>>24)
        g_tbl_add=6;
 
      g_tbl_pos += g_tbl_add;
-     if(g_tbl_pos > 23)
+     if (g_tbl_pos > 23)
        g_tbl_pos -= 24;
-     if(g_tbl_pos > 23) {
+     if (g_tbl_pos > 23) {
        printf("ERROR! table pos outside bounds!\nEXITING!\n");
        return;
-     }//if
+     } // if
 
      //printf("new g_tbl_pos is %d - output was %c\n", g_tbl_pos, p_last);
-}//tblSet
+} // tbl_set
 
 
 int main() {
@@ -103,9 +103,9 @@ int main() {
 
 /*
   printf("using table\n");
-  for(i=0;i<24;i++) {
+  for (i=0;i<24;i++) {
    printf("%lld = %c%c%c%c\n", i, G4ROLL[i]>>24, G4ROLL[i]>>16, G4ROLL[i]>>8, G4ROLL[i]);
-  }//for 24 (i)
+  } // for 24 (i)
 */
 
   read_file = fopen("/tmp/test.dec", "r");
@@ -121,13 +121,13 @@ int main() {
 
   //printf("%s\n---EOF---\n", file_buf);
 
-  for(i=0; (i+(bs_offset/4))<(file_sz/4); i++) {
-     for(k=0; k<4; k++) {
+  for (i=0; (i+(bs_offset/4))<(file_sz/4); i++) {
+     for (k=0; k<4; k++) {
 
           dt_dec = file_buf[i*4+k+bs_offset];
-          if(n_cnt >= HOMO_REPEAT) {
+          if (n_cnt >= HOMO_REPEAT) {
             lst_nuc = dt_dec;
-            tblSet(lst_nuc);
+            tbl_set(lst_nuc);
             bs_offset++;
             n_cnt = 1;
             k--;     //go back a chunk
@@ -135,7 +135,7 @@ int main() {
           }
 
           //printf("data read...%c\n", dt_dec);
-          if(lst_nuc == dt_dec)
+          if (lst_nuc == dt_dec)
             n_cnt++;
           else
             n_cnt = 1;
@@ -143,20 +143,20 @@ int main() {
 
           //           k == 0- 1- 2- 3
           //decode ACGT to 00-00-00-00 byte, chunk by chunk
-          if(dt_dec == (u_char)((G4ROLL[g_tbl_pos])) )
+          if (dt_dec == (u_char)((G4ROLL[g_tbl_pos])) )
             out_buf[i] += (u_char)(3<<(2*(3-k)));//192,48,12,3
-          else if(dt_dec == (u_char)((G4ROLL[g_tbl_pos])>>8) )
+          else if (dt_dec == (u_char)((G4ROLL[g_tbl_pos])>>8) )
             out_buf[i] += (u_char)(2<<(2*(3-k)));//128,32,8,2
-          else if(dt_dec == (u_char)((G4ROLL[g_tbl_pos])>>16) )
+          else if (dt_dec == (u_char)((G4ROLL[g_tbl_pos])>>16) )
             out_buf[i] += (u_char)(1<<(2*(3-k)));//64,16,4,1
-          if(n_cnt < HOMO_REPEAT)
-            tblSet(lst_nuc);
-     }//k
+          if (n_cnt < HOMO_REPEAT)
+            tbl_set(lst_nuc);
+     } // k
 
      //same roll 'randomness' as encode
-     if(i % 24)
+     if (i % 24)
        g_tbl_pos += 7;
-     if(g_tbl_pos>23)
+     if (g_tbl_pos>23)
        g_tbl_pos -= 24;
 
   };//i, file
@@ -172,5 +172,5 @@ int main() {
   fclose(out_file);
   return 0;
 
-}//main
+} // main
 
